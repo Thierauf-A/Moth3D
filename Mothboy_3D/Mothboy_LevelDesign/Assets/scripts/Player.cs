@@ -9,13 +9,20 @@ public class Player : MonoBehaviour
     [SerializeField] private float speed = 5.0f;
     [SerializeField] private float jumpAmount = 65.0f;
 
-    //[SerializeField] private Rigidbody rb;
+    private UIManager UI;
+    private GameManager GM;
 
     [SerializeField] private Transform cam;
+    private AudioSource jumpAudio;
+
+    //[SerializeField] private Rigidbody rb;
 
     // Start is called before the first frame update
     void Start()
     {
+        //Jump to start position
+        transform.position = new Vector3(0, 1, -5);
+
         controller = GetComponent<CharacterController>();
         //rb = GetComponent<Rigidbody>();
 
@@ -24,6 +31,11 @@ public class Player : MonoBehaviour
 
         //lock cursor into game window
         Cursor.lockState = CursorLockMode.Locked;
+
+        UI = GameObject.Find("UIManager").GetComponent<UIManager>();
+        GM = GameObject.Find("GameManager").GetComponent<GameManager>(); //dont set here
+        
+        jumpAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -42,12 +54,13 @@ public class Player : MonoBehaviour
 
     private void Platform()
     {
-        //rotate camera player thingy  
-        float angle = cam.eulerAngles.y; ;
+        //rotate player to match camera direction
+        float angle = cam.eulerAngles.y;
         transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
         Vector3 moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-
+        moveDirection = transform.TransformDirection(moveDirection);
+        
         if (controller.isGrounded)
         {
             moveDirection.y = 0;
@@ -61,6 +74,10 @@ public class Player : MonoBehaviour
             //Jumping
             if (Input.GetButton("Jump"))
                 moveDirection.y = jumpAmount;
+                if(moveDirection.y > 2){
+                    jumpAudio.Play();
+                }
+                
 
         }
         //Applying gravity to the controller
@@ -71,12 +88,6 @@ public class Player : MonoBehaviour
 
     private void Move()
     {
-
-        //rotate camera player thingy  
-        float angle = cam.eulerAngles.y; ;
-        transform.rotation = Quaternion.Euler(0f, angle, 0f);
-
-
         Vector3 playerVelocity = Vector3.zero;
         if (controller.isGrounded)
         {
@@ -110,5 +121,6 @@ public class Player : MonoBehaviour
             Debug.Log("Jump");
         }
     }
+
 }
 

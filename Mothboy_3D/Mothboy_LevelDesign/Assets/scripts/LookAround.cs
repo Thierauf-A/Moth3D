@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class LookAround : MonoBehaviour
 {
-    
-
+    [SerializeField] private GameObject PlayerCamera;
 
     // Start is called before the first frame update
     void Start()
@@ -16,6 +15,6 @@ public class LookAround : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        PlayerCamera.transform.LookAt(transform.position);
     }
 }
